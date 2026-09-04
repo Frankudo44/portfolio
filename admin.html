@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Franklin Portfolio</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C63FF'/><text x='50' y='68' font-family='Arial,sans-serif' font-size='52' font-weight='bold' fill='white' text-anchor='middle'>FU</text></svg>" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--accent:#6C63FF;--accent-light:#8B85FF;--accent-dark:#5A52E0;--accent-glow:rgba(108,99,255,0.25);--font-main:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-mono:'JetBrains Mono',monospace;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-full:9999px}
+        [data-theme="dark"]{--bg-primary:#000000;--bg-secondary:#0d0d0d;--bg-card:rgba(255,255,255,0.03);--bg-card-hover:rgba(255,255,255,0.06);--bg-nav:rgba(0,0,0,0.9);--border-color:rgba(255,255,255,0.09);--text-primary:#f5f5f5;--text-secondary:rgba(245,245,245,0.6);--text-tertiary:rgba(245,245,245,0.4);--input-bg:rgba(255,255,255,0.05);--danger:#ef4444;--success:#22c55e}
+        [data-theme="light"]{--bg-primary:#ffffff;--bg-secondary:#f8f9fa;--bg-card:rgba(0,0,0,0.02);--bg-card-hover:rgba(0,0,0,0.04);--bg-nav:rgba(255,255,255,0.9);--border-color:rgba(0,0,0,0.08);--text-primary:#1a1a2e;--text-secondary:rgba(26,26,46,0.6);--text-tertiary:rgba(26,26,46,0.4);--input-bg:rgba(0,0,0,0.03);--danger:#dc2626;--success:#16a34a}
+        body{font-family:var(--font-main);background:var(--bg-primary);color:var(--text-primary);min-height:100vh}
+
+        /* Login */
+        .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+        .login-box{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-xl);padding:48px;width:100%;max-width:420px;text-align:center}
+        .login-box h1{font-size:1.8rem;font-weight:700;margin-bottom:8px}
+        .login-box p{color:var(--text-secondary);margin-bottom:32px;font-size:0.95rem}
+        .login-box .logo{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--accent);margin-bottom:24px;display:block}
+        .login-input{width:100%;padding:14px 16px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:var(--radius-md);color:var(--text-primary);font-family:var(--font-main);font-size:0.95rem;outline:none;transition:border-color 0.2s;margin-bottom:16px}
+        .login-input:focus{border-color:var(--accent)}
+        .login-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-family:var(--font-main);font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+        .login-btn:hover{background:var(--accent-light)}
+        .login-error{color:var(--danger);font-size:0.85rem;margin-top:8px;display:none}
+
+        /* Dashboard */
+        .dashboard{display:none}
+        .dashboard.active{display:block}
+
+        /* Sidebar */
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--bg-secondary);border-right:1px solid var(--border-color);padding:24px 0;z-index:100;display:flex;flex-direction:column}
+        .sidebar-logo{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--accent);padding:0 24px;margin-bottom:32px;display:block;text-decoration:none}
+        .sidebar-nav{flex:1;display:flex;flex-direction:column;gap:2px;padding:0 12px}
+        .sidebar-link{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-md);color:var(--text-secondary);text-decoration:none;font-size:0.9rem;font-weight:500;transition:all 0.2s;cursor:pointer}
+        .sidebar-link:hover,.sidebar-link.active{background:var(--accent-glow);color:var(--accent)}
+        .sidebar-link svg{flex-shrink:0}
+        .sidebar-footer{padding:16px 24px;border-top:1px solid var(--border-color);display:flex;gap:8px}
+        .sidebar-footer a,.sidebar-footer button{flex:1;padding:10px;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);font-family:var(--font-main);font-size:0.8rem;font-weight:500;cursor:pointer;text-decoration:none;text-align:center;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+        .sidebar-footer a:hover,.sidebar-footer button:hover{border-color:var(--accent);color:var(--accent)}
+
+        /* Main */
+        .main{margin-left:260px;padding:32px 40px;min-height:100vh}
+        .page-header{margin-bottom:32px}
+        .page-header h2{font-size:1.6rem;font-weight:700}
+        .page-header p{color:var(--text-secondary);margin-top:4px}
+
+        /* Cards */
+        .card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px}
+        .card-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+        /* Forms */
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px}
+        .form-input,.form-textarea,.form-select{width:100%;padding:12px 14px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-main);font-size:0.9rem;outline:none;transition:border-color 0.2s}
+        .form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent)}
+        .form-textarea{resize:vertical;min-height:80px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+        /* Buttons */
+        .btn{padding:10px 20px;border-radius:var(--radius-sm);font-family:var(--font-main);font-size:0.85rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background:var(--accent);color:#fff}
+        .btn-primary:hover{background:var(--accent-light)}
+        .btn-danger{background:var(--danger);color:#fff}
+        .btn-danger:hover{opacity:0.9}
+        .btn-outline{background:transparent;border:1px solid var(--border-color);color:var(--text-secondary)}
+        .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+        .btn-sm{padding:6px 12px;font-size:0.8rem}
+        .btn-group{display:flex;gap:8px;margin-top:16px}
+
+        /* Item list */
+        .item-list{display:flex;flex-direction:column;gap:8px}
+        .item-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:var(--radius-sm);gap:12px}
+        .item-row .item-info{flex:1;min-width:0}
+        .item-row .item-name{font-weight:600;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .item-row .item-desc{font-size:0.8rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+        .item-row .item-actions{display:flex;gap:6px;flex-shrink:0}
+
+        /* Toast */
+        .toast{position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:var(--radius-md);font-size:0.9rem;font-weight:500;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s ease;color:#fff}
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast.success{background:var(--success)}
+        .toast.error{background:var(--danger)}
+
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+        .modal-overlay.active{display:flex}
+        .modal{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:32px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+        .modal h3{font-size:1.2rem;font-weight:700;margin-bottom:20px}
+        .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.2rem}
+
+        /* Theme toggle in header */
+        .topbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:8px}
+        .theme-toggle{background:var(--bg-card);border:1px solid var(--border-color);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary);transition:all 0.2s}
+        .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+        [data-theme="dark"] .icon-sun{display:block}[data-theme="dark"] .icon-moon{display:none}
+        [data-theme="light"] .icon-sun{display:none}[data-theme="light"] .icon-moon{display:block}
+
+        /* Responsive */
+        @media(max-width:900px){
+            .sidebar{width:60px;overflow:hidden}
+            .sidebar-logo,.sidebar-link span,.sidebar-footer span{display:none}
+            .sidebar-link{justify-content:center;padding:12px}
+            .sidebar-footer{flex-direction:column;padding:8px}
+            .main{margin-left:60px;padding:24px 16px}
+            .form-row{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+    <div class="login-box">
+        <span class="logo">&lt;FU /&gt;</span>
+        <h1>Admin Panel</h1>
+        <p>Enter your password to manage your portfolio</p>
+        <input type="password" class="login-input" id="password-input" placeholder="Password" autofocus>
+        <button class="login-btn" id="login-btn">Sign In</button>
+        <p class="login-error" id="login-error">Incorrect password. Try again.</p>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+    <aside class="sidebar">
+        <a href="#" class="sidebar-logo">&lt;FU /&gt;</a>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link active" data-tab="profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profile</span>
+            </a>
+            <a class="sidebar-link" data-tab="about">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>About</span>
+            </a>
+            <a class="sidebar-link" data-tab="skills">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Skills</span>
+            </a>
+            <a class="sidebar-link" data-tab="projects">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span>Projects</span>
+            </a>
+            <a class="sidebar-link" data-tab="services">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Services</span>
+            </a>
+            <a class="sidebar-link" data-tab="contact">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>Contact</span>
+            </a>
+            <a class="sidebar-link" data-tab="journey">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Journey</span>
+            </a>
+            <a class="sidebar-link" data-tab="testimonials">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Testimonials</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>View Site</span></a>
+            <button id="logout-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Logout</span></button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div class="tab-content active" id="tab-profile">
+            <div class="page-header"><h2>Profile</h2><p>Edit your hero section and personal info</p></div>
+            <div class="card">
+                <div class="card-title">Hero Section</div>
+                <div class="form-group"><label>Full Name</label><input class="form-input" id="f-name" placeholder="Your full name"></div>
+                <div class="form-group"><label>Title / Role</label><input class="form-input" id="f-title" placeholder="e.g. Web Developer & CS Student"></div>
+                <div class="form-group"><label>Description</label><textarea class="form-textarea" id="f-desc" rows="3" placeholder="Short bio..."></textarea></div>
+                <div class="form-group"><label>Photo URL (optional)</label><input class="form-input" id="f-photo" placeholder="https://..."></div>
+                <div class="btn-group"><button class="btn btn-primary" id="save-profile">Save Profile</button></div>
+            </div>
+        </div>
+
+        <!-- ABOUT TAB -->
+        <div class="tab-content" id="tab-about" style="display:none">
+            <div class="page-header"><h2>About</h2><p>Edit your about section and stats</p></div>
+            <div class="card">
+                <div class="card-title">About Content</div>
+                <div class="form-group"><label>Intro Paragraph</label><textarea class="form-textarea" id="f-about-intro" rows="3"></textarea></div>
+                <div class="form-group"><label>Paragraph 2</label><textarea class="form-textarea" id="f-about-p2" rows="3"></textarea></div>
+                <div class="form-group"><label>Paragraph 3</label><textarea class="form-textarea" id="f-about-p3" rows="3"></textarea></div>
+                <div class="btn-group"><button class="btn btn-primary" id="save-about">Save About</button></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Stats</div>
+                <div id="stats-list"></div>
+                <div class="btn-group"><button class="btn btn-outline btn-sm" id="add-stat">+ Add Stat</button><button class="btn btn-primary" id="save-stats">Save Stats</button></div>
+            </div>
+        </div>
+
+        <!-- SKILLS TAB -->
+        <div class="tab-content" id="tab-skills" style="display:none">
+            <div class="page-header"><h2>Skills</h2><p>Manage your technical skills</p></div>
+            <div class="card">
+                <div class="item-list" id="skills-list"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="add-skill">+ Add Skill</button></div>
+            </div>
+        </div>
+
+        <!-- PROJECTS TAB -->
+        <div class="tab-content" id="tab-projects" style="display:none">
+            <div class="page-header"><h2>Projects</h2><p>Manage your portfolio projects</p></div>
+            <div class="card">
+                <div class="item-list" id="projects-list"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="add-project">+ Add Project</button></div>
+            </div>
+        </div>
+
+        <!-- SERVICES TAB -->
+        <div class="tab-content" id="tab-services" style="display:none">
+            <div class="page-header"><h2>Services</h2><p>Manage your service offerings</p></div>
+            <div class="card">
+                <div class="item-list" id="services-list"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="add-service">+ Add Service</button></div>
+            </div>
+        </div>
+
+        <!-- CONTACT TAB -->
+        <div class="tab-content" id="tab-contact" style="display:none">
+            <div class="page-header"><h2>Contact Info</h2><p>Edit your contact details</p></div>
+            <div class="card">
+                <div class="form-row">
+                    <div class="form-group"><label>Email</label><input class="form-input" id="f-email"></div>
+                    <div class="form-group"><label>Phone 1</label><input class="form-input" id="f-phone1"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Phone 2</label><input class="form-input" id="f-phone2"></div>
+                    <div class="form-group"><label>Location</label><input class="form-input" id="f-location"></div>
+                </div>
+                <div class="form-group"><label>Availability</label><input class="form-input" id="f-availability"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>GitHub URL</label><input class="form-input" id="f-github"></div>
+                    <div class="form-group"><label>LinkedIn URL</label><input class="form-input" id="f-linkedin"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Twitter URL</label><input class="form-input" id="f-twitter"></div>
+                    <div class="form-group"><label>Instagram URL</label><input class="form-input" id="f-instagram"></div>
+                </div>
+                <div class="btn-group"><button class="btn btn-primary" id="save-contact">Save Contact</button></div>
+            </div>
+        </div>
+
+        <!-- JOURNEY TAB -->
+        <div class="tab-content" id="tab-journey" style="display:none">
+            <div class="page-header"><h2>Journey</h2><p>Manage your learning timeline</p></div>
+            <div class="card">
+                <div class="item-list" id="journey-list"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="add-journey">+ Add Milestone</button></div>
+            </div>
+        </div>
+
+        <!-- TESTIMONIALS TAB -->
+        <div class="tab-content" id="tab-testimonials" style="display:none">
+            <div class="page-header"><h2>Testimonials</h2><p>Manage client feedback</p></div>
+            <div class="card">
+                <div class="item-list" id="testimonials-list"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="add-testimonial">+ Add Testimonial</button></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+    'use strict';
+
+    var PASSWORD = 'admin123';
+    var loginScreen = document.getElementById('login-screen');
+    var dashboard = document.getElementById('dashboard');
+    var passwordInput = document.getElementById('password-input');
+    var loginBtn = document.getElementById('login-btn');
+    var loginError = document.getElementById('login-error');
+    var logoutBtn = document.getElementById('logout-btn');
+    var modalOverlay = document.getElementById('modal-overlay');
+    var modal = document.getElementById('modal');
+    var toast = document.getElementById('toast');
+
+    // Theme
+    var html = document.documentElement;
+    var themeToggle = document.getElementById('theme-toggle');
+    function getTheme(){return localStorage.getItem('theme')||'dark'}
+    function setTheme(t){html.setAttribute('data-theme',t);localStorage.setItem('theme',t)}
+    setTheme(getTheme());
+    themeToggle.addEventListener('click',function(){setTheme(getTheme()==='dark'?'light':'dark')});
+
+    // Auth
+    function isLoggedIn(){return sessionStorage.getItem('admin_auth')==='true'}
+    function showLogin(){loginScreen.style.display='flex';dashboard.classList.remove('active')}
+    function showDashboard(){loginScreen.style.display='none';dashboard.classList.add('active');loadAll()}
+
+    if(isLoggedIn()) showDashboard(); else showLogin();
+
+    loginBtn.addEventListener('click',function(){
+        if(passwordInput.value===PASSWORD){sessionStorage.setItem('admin_auth','true');showDashboard()}
+        else{loginError.style.display='block';passwordInput.value=''}
+    });
+    passwordInput.addEventListener('keydown',function(e){if(e.key==='Enter')loginBtn.click()});
+    logoutBtn.addEventListener('click',function(){sessionStorage.removeItem('admin_auth');showLogin()});
+
+    // Tabs
+    var tabs=document.querySelectorAll('.sidebar-link');
+    tabs.forEach(function(tab){
+        tab.addEventListener('click',function(){
+            tabs.forEach(function(t){t.classList.remove('active')});
+            tab.classList.add('active');
+            var target=tab.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(function(c){c.style.display='none'});
+            document.getElementById('tab-'+target).style.display='block';
+        });
+    });
+
+    // Toast
+    function showToast(msg,type){
+        toast.textContent=msg;toast.className='toast '+type+' show';
+        setTimeout(function(){toast.classList.remove('show')},2500);
+    }
+
+    // Modal
+    function openModal(html){modal.innerHTML=html;modalOverlay.classList.add('active')}
+    function closeModal(){modalOverlay.classList.remove('active')}
+    modalOverlay.addEventListener('click',function(e){if(e.target===modalOverlay)closeModal()});
+
+    // Data helpers
+    function getData(key,def){try{var d=localStorage.getItem('portfolio_'+key);return d?JSON.parse(d):def}catch(e){return def}}
+    function setData(key,val){localStorage.setItem('portfolio_'+key,JSON.stringify(val))}
+
+    // Default data
+    var defaultProfile={name:'Ihechi Franklin Udoeze',title:'Web Developer & Computer Science Student',desc:'I build clean, responsive websites that work well and look good doing it. Currently studying Computer Science while working on real projects for clients.',photo:''};
+    var defaultAbout={intro:"I'm a web developer and Computer Science student. I like building things for the web — sites that are fast, responsive, and easy to use.",p2:"I work mostly with front-end technologies: HTML, CSS, and JavaScript. I've also spent time with Firebase and Supabase for backend features like authentication and databases. I care about writing code that's clean and maintainable, not just code that works.",p3:"When I'm not coding, I'm usually learning something new or working on a side project. I believe in building things that are useful, not just impressive-looking."};
+    var defaultStats=[{label:'Projects Completed',target:15},{label:'Technologies Skilled In',target:10},{label:'Years of Learning',target:3},{label:'Happy Clients',target:5}];
+    var defaultSkills=[{name:'HTML',desc:'Semantic markup, accessibility, and SEO-friendly structure.'},{name:'CSS',desc:'Flexbox, Grid, animations, and responsive design.'},{name:'JavaScript',desc:'ES6+, DOM manipulation, async programming, and modern frameworks.'},{name:'Responsive Design',desc:'Mobile-first approach, fluid layouts, and cross-device compatibility.'},{name:'Git & GitHub',desc:'Version control, branching, collaboration, and CI/CD.'},{name:'Firebase',desc:'Authentication, Firestore, real-time databases, and cloud functions.'},{name:'Supabase',desc:'Open-source Firebase alternative with PostgreSQL and real-time subscriptions.'},{name:'UI/UX Design',desc:'User-centered design, wireframing, and prototyping.'}];
+    var defaultProjects=[{name:'E-Commerce Platform',desc:'A responsive e-commerce platform with product filtering, shopping cart, and checkout integration. Built with vanilla JavaScript and Firebase for the backend.',tech:'HTML, CSS, JavaScript, Firebase',link:''},{name:'Task Management Dashboard',desc:'A collaborative task manager with drag-and-drop, team assignments, and progress tracking. Real-time updates powered by Supabase.',tech:'JavaScript, CSS Grid, Supabase',link:''},{name:'Weather Application',desc:'A clean weather app with location-based forecasts, interactive maps, and dynamic visual backgrounds. Pulls data from a weather API.',tech:'HTML, CSS, JavaScript, API',link:''},{name:'Portfolio Website',desc:'This very site. A responsive developer portfolio with dark mode, smooth animations, and a lightweight admin panel for content management.',tech:'HTML, CSS, JavaScript',link:''},{name:'Landing Page Template',desc:'A conversion-focused landing page with smooth scroll sections, a working contact form, and newsletter integration.',tech:'HTML, CSS, JavaScript',link:''},{name:'Blog Platform',desc:'A minimal blog with markdown support, category filtering, and a clean reading experience. Content stored in Supabase.',tech:'HTML, CSS, Supabase',link:''}];
+    var defaultServices=[{name:'Website Development',desc:'Custom-built websites from scratch. Clean code, fast load times, and solid performance.'},{name:'Responsive Design',desc:'Sites that look and work well on every screen — phones, tablets, and desktops.'},{name:'E-Commerce Development',desc:'Online stores with product catalogs, carts, and payment integration.'},{name:'Landing Pages',desc:'Focused, single-purpose pages designed to convert visitors into customers or leads.'},{name:'Website Maintenance',desc:'Ongoing support, bug fixes, updates, and performance improvements for existing sites.'}];
+    var defaultContact={email:'ihechifranklin0@gmail.com',phone1:'+2349065294220',phone2:'+2348035921952',location:'Nigeria',availability:'Open to opportunities',github:'#',linkedin:'#',twitter:'#',instagram:'#'};
+
+    // ===== LOAD ALL =====
+    function loadAll(){loadProfile();loadAbout();loadStats();loadSkills();loadProjects();loadServices();loadContact();loadJourney();loadTestimonials()}
+
+    // PROFILE
+    function loadProfile(){var d=getData('profile',defaultProfile);document.getElementById('f-name').value=d.name;document.getElementById('f-title').value=d.title;document.getElementById('f-desc').value=d.desc;document.getElementById('f-photo').value=d.photo||''}
+    document.getElementById('save-profile').addEventListener('click',function(){setData('profile',{name:document.getElementById('f-name').value,title:document.getElementById('f-title').value,desc:document.getElementById('f-desc').value,photo:document.getElementById('f-photo').value});showToast('Profile saved!','success')});
+
+    // ABOUT
+    function loadAbout(){var d=getData('about',defaultAbout);document.getElementById('f-about-intro').value=d.intro;document.getElementById('f-about-p2').value=d.p2;document.getElementById('f-about-p3').value=d.p3}
+    document.getElementById('save-about').addEventListener('click',function(){setData('about',{intro:document.getElementById('f-about-intro').value,p2:document.getElementById('f-about-p2').value,p3:document.getElementById('f-about-p3').value});showToast('About saved!','success')});
+
+    // STATS
+    function loadStats(){var stats=getData('stats',defaultStats);var c=document.getElementById('stats-list');c.innerHTML='';stats.forEach(function(s,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div style="display:flex;gap:12px;flex:1"><input class="form-input stat-label-input" value="'+s.label+'" placeholder="Label" style="flex:2"><input class="form-input stat-target-input" type="number" value="'+s.target+'" placeholder="Number" style="flex:1"></div><div class="item-actions"><button class="btn btn-danger btn-sm stat-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.stat-del').forEach(function(b){b.addEventListener('click',function(){var stats=getData('stats',defaultStats);stats.splice(parseInt(b.getAttribute('data-i')),1);setData('stats',stats);loadStats()})})}
+    document.getElementById('add-stat').addEventListener('click',function(){var stats=getData('stats',defaultStats);stats.push({label:'New Stat',target:0});setData('stats',stats);loadStats()});
+    document.getElementById('save-stats').addEventListener('click',function(){var rows=document.querySelectorAll('#stats-list .item-row');var stats=[];rows.forEach(function(r){stats.push({label:r.querySelector('.stat-label-input').value,target:parseInt(r.querySelector('.stat-target-input').value)||0})});setData('stats',stats);showToast('Stats saved!','success')});
+
+    // SKILLS
+    function loadSkills(){var skills=getData('skills',defaultSkills);var c=document.getElementById('skills-list');c.innerHTML='';skills.forEach(function(s,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div class="item-info"><div class="item-name">'+s.name+'</div><div class="item-desc">'+s.desc+'</div></div><div class="item-actions"><button class="btn btn-outline btn-sm skill-edit" data-i="'+i+'">Edit</button><button class="btn btn-danger btn-sm skill-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.skill-edit').forEach(function(b){b.addEventListener('click',function(){var skills=getData('skills',defaultSkills);var s=skills[parseInt(b.getAttribute('data-i'))];openModal('<h3>Edit Skill</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-skill-name" value="'+s.name+'"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-skill-desc" rows="3">'+s.desc+'</textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-skill">Save</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-skill').addEventListener('click',function(){var skills=getData('skills',defaultSkills);skills[parseInt(b.getAttribute('data-i'))]={name:document.getElementById('m-skill-name').value,desc:document.getElementById('m-skill-desc').value};setData('skills',skills);closeModal();loadSkills();showToast('Skill updated!','success')})})});c.querySelectorAll('.skill-del').forEach(function(b){b.addEventListener('click',function(){var skills=getData('skills',defaultSkills);skills.splice(parseInt(b.getAttribute('data-i')),1);setData('skills',skills);loadSkills()})})}
+    document.getElementById('add-skill').addEventListener('click',function(){openModal('<h3>Add Skill</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-skill-name" placeholder="e.g. React"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-skill-desc" rows="3" placeholder="What you know..."></textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-skill">Add</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-skill').addEventListener('click',function(){var skills=getData('skills',defaultSkills);skills.push({name:document.getElementById('m-skill-name').value,desc:document.getElementById('m-skill-desc').value});setData('skills',skills);closeModal();loadSkills();showToast('Skill added!','success')})});
+
+    // PROJECTS
+    function loadProjects(){var projects=getData('projects',defaultProjects);var c=document.getElementById('projects-list');c.innerHTML='';projects.forEach(function(p,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div class="item-info"><div class="item-name">'+p.name+'</div><div class="item-desc">'+p.tech+'</div></div><div class="item-actions"><button class="btn btn-outline btn-sm proj-edit" data-i="'+i+'">Edit</button><button class="btn btn-danger btn-sm proj-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.proj-edit').forEach(function(b){b.addEventListener('click',function(){var projects=getData('projects',defaultProjects);var p=projects[parseInt(b.getAttribute('data-i'))];openModal('<h3>Edit Project</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-proj-name" value="'+p.name+'"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-proj-desc" rows="3">'+p.desc+'</textarea></div><div class="form-group"><label>Tech (comma separated)</label><input class="form-input" id="m-proj-tech" value="'+p.tech+'"></div><div class="form-group"><label>Live URL</label><input class="form-input" id="m-proj-link" value="'+(p.link||'')+'"></div><div class="btn-group"><button class="btn btn-primary" id="m-save-proj">Save</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-proj').addEventListener('click',function(){var projects=getData('projects',defaultProjects);projects[parseInt(b.getAttribute('data-i'))]={name:document.getElementById('m-proj-name').value,desc:document.getElementById('m-proj-desc').value,tech:document.getElementById('m-proj-tech').value,link:document.getElementById('m-proj-link').value};setData('projects',projects);closeModal();loadProjects();showToast('Project updated!','success')})})});c.querySelectorAll('.proj-del').forEach(function(b){b.addEventListener('click',function(){var projects=getData('projects',defaultProjects);projects.splice(parseInt(b.getAttribute('data-i')),1);setData('projects',projects);loadProjects()})})}
+    document.getElementById('add-project').addEventListener('click',function(){openModal('<h3>Add Project</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-proj-name" placeholder="Project name"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-proj-desc" rows="3" placeholder="What it does..."></textarea></div><div class="form-group"><label>Tech (comma separated)</label><input class="form-input" id="m-proj-tech" placeholder="HTML, CSS, JavaScript"></div><div class="form-group"><label>Live URL</label><input class="form-input" id="m-proj-link" placeholder="https://..."></div><div class="btn-group"><button class="btn btn-primary" id="m-save-proj">Add</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-proj').addEventListener('click',function(){var projects=getData('projects',defaultProjects);projects.push({name:document.getElementById('m-proj-name').value,desc:document.getElementById('m-proj-desc').value,tech:document.getElementById('m-proj-tech').value,link:document.getElementById('m-proj-link').value});setData('projects',projects);closeModal();loadProjects();showToast('Project added!','success')})});
+
+    // SERVICES
+    function loadServices(){var services=getData('services',defaultServices);var c=document.getElementById('services-list');c.innerHTML='';services.forEach(function(s,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div class="item-info"><div class="item-name">'+s.name+'</div><div class="item-desc">'+s.desc+'</div></div><div class="item-actions"><button class="btn btn-outline btn-sm svc-edit" data-i="'+i+'">Edit</button><button class="btn btn-danger btn-sm svc-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.svc-edit').forEach(function(b){b.addEventListener('click',function(){var services=getData('services',defaultServices);var s=services[parseInt(b.getAttribute('data-i'))];openModal('<h3>Edit Service</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-svc-name" value="'+s.name+'"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-svc-desc" rows="3">'+s.desc+'</textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-svc">Save</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-svc').addEventListener('click',function(){var services=getData('services',defaultServices);services[parseInt(b.getAttribute('data-i'))]={name:document.getElementById('m-svc-name').value,desc:document.getElementById('m-svc-desc').value};setData('services',services);closeModal();loadServices();showToast('Service updated!','success')})})});c.querySelectorAll('.svc-del').forEach(function(b){b.addEventListener('click',function(){var services=getData('services',defaultServices);services.splice(parseInt(b.getAttribute('data-i')),1);setData('services',services);loadServices()})})}
+    document.getElementById('add-service').addEventListener('click',function(){openModal('<h3>Add Service</h3><div class="form-group"><label>Name</label><input class="form-input" id="m-svc-name" placeholder="Service name"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-svc-desc" rows="3" placeholder="What you offer..."></textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-svc">Add</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-svc').addEventListener('click',function(){var services=getData('services',defaultServices);services.push({name:document.getElementById('m-svc-name').value,desc:document.getElementById('m-svc-desc').value});setData('services',services);closeModal();loadServices();showToast('Service added!','success')})});
+
+    // CONTACT
+    function loadContact(){var d=getData('contact',defaultContact);document.getElementById('f-email').value=d.email;document.getElementById('f-phone1').value=d.phone1;document.getElementById('f-phone2').value=d.phone2;document.getElementById('f-location').value=d.location;document.getElementById('f-availability').value=d.availability;document.getElementById('f-github').value=d.github;document.getElementById('f-linkedin').value=d.linkedin;document.getElementById('f-twitter').value=d.twitter;document.getElementById('f-instagram').value=d.instagram}
+    document.getElementById('save-contact').addEventListener('click',function(){setData('contact',{email:document.getElementById('f-email').value,phone1:document.getElementById('f-phone1').value,phone2:document.getElementById('f-phone2').value,location:document.getElementById('f-location').value,availability:document.getElementById('f-availability').value,github:document.getElementById('f-github').value,linkedin:document.getElementById('f-linkedin').value,twitter:document.getElementById('f-twitter').value,instagram:document.getElementById('f-instagram').value});showToast('Contact saved!','success')});
+
+    // JOURNEY
+    var defaultJourney=[{date:'2023',title:'Started Computer Science',desc:'Began my degree, learning programming fundamentals, algorithms, and data structures.'},{date:'2023',title:'Web Development Begins',desc:'Learned HTML, CSS, and JavaScript. Built my first responsive websites and got hooked on frontend work.'},{date:'2024',title:'Backend & Databases',desc:'Added Firebase and Supabase to my toolkit. Built full-stack apps with authentication and real-time data.'},{date:'2024',title:'First Freelance Projects',desc:'Delivered professional websites for clients. Learned how to manage projects and communicate with stakeholders.'},{date:'2025',title:'UI/UX & Complex Projects',desc:'Got deeper into design principles. Built e-commerce platforms and collaborative tools.'},{date:'2026',title:'Looking Ahead',desc:'Learning React and TypeScript. Exploring cloud deployment. Looking for roles where I can grow and contribute.'}];
+    function loadJourney(){var items=getData('journey',defaultJourney);var c=document.getElementById('journey-list');c.innerHTML='';items.forEach(function(s,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div class="item-info"><div class="item-name">'+s.date+' - '+s.title+'</div><div class="item-desc">'+s.desc+'</div></div><div class="item-actions"><button class="btn btn-outline btn-sm jrn-edit" data-i="'+i+'">Edit</button><button class="btn btn-danger btn-sm jrn-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.jrn-edit').forEach(function(b){b.addEventListener('click',function(){var items=getData('journey',defaultJourney);var s=items[parseInt(b.getAttribute('data-i'))];openModal('<h3>Edit Milestone</h3><div class="form-group"><label>Date</label><input class="form-input" id="m-jrn-date" value="'+s.date+'"></div><div class="form-group"><label>Title</label><input class="form-input" id="m-jrn-title" value="'+s.title+'"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-jrn-desc" rows="3">'+s.desc+'</textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-jrn">Save</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-jrn').addEventListener('click',function(){var items=getData('journey',defaultJourney);items[parseInt(b.getAttribute('data-i'))]={date:document.getElementById('m-jrn-date').value,title:document.getElementById('m-jrn-title').value,desc:document.getElementById('m-jrn-desc').value};setData('journey',items);closeModal();loadJourney();showToast('Milestone updated!','success')})})});c.querySelectorAll('.jrn-del').forEach(function(b){b.addEventListener('click',function(){var items=getData('journey',defaultJourney);items.splice(parseInt(b.getAttribute('data-i')),1);setData('journey',items);loadJourney()})})}
+    document.getElementById('add-journey').addEventListener('click',function(){openModal('<h3>Add Milestone</h3><div class="form-group"><label>Date</label><input class="form-input" id="m-jrn-date" placeholder="e.g. 2024"></div><div class="form-group"><label>Title</label><input class="form-input" id="m-jrn-title" placeholder="Milestone title"></div><div class="form-group"><label>Description</label><textarea class="form-textarea" id="m-jrn-desc" rows="3" placeholder="What happened..."></textarea></div><div class="btn-group"><button class="btn btn-primary" id="m-save-jrn">Add</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-jrn').addEventListener('click',function(){var items=getData('journey',defaultJourney);items.push({date:document.getElementById('m-jrn-date').value,title:document.getElementById('m-jrn-title').value,desc:document.getElementById('m-jrn-desc').value});setData('journey',items);closeModal();loadJourney();showToast('Milestone added!','success')})});
+
+    // TESTIMONIALS
+    var defaultTestimonials=[{text:'Franklin delivered a website that was exactly what we needed. His attention to detail and ability to take feedback and run with it made the whole process easy. Highly recommend.',name:'Sarah Mitchell',role:'Small Business Owner'},{text:'Working with Franklin was straightforward. He understood what we wanted quickly and built a site that looked professional and worked perfectly. Good communication throughout.',name:'James Rodriguez',role:'Startup Founder'},{text:'Franklin\'s technical skills and design sense made him a great fit for our e-commerce project. He delivered on time and the site has performed well since launch.',name:'Emily Chen',role:'Marketing Director'}];
+    function loadTestimonials(){var items=getData('testimonials',defaultTestimonials);var c=document.getElementById('testimonials-list');c.innerHTML='';items.forEach(function(s,i){var row=document.createElement('div');row.className='item-row';row.innerHTML='<div class="item-info"><div class="item-name">'+s.name+' - '+s.role+'</div><div class="item-desc">'+s.text.substring(0,80)+'...</div></div><div class="item-actions"><button class="btn btn-outline btn-sm tst-edit" data-i="'+i+'">Edit</button><button class="btn btn-danger btn-sm tst-del" data-i="'+i+'">X</button></div>';c.appendChild(row)});c.querySelectorAll('.tst-edit').forEach(function(b){b.addEventListener('click',function(){var items=getData('testimonials',defaultTestimonials);var s=items[parseInt(b.getAttribute('data-i'))];openModal('<h3>Edit Testimonial</h3><div class="form-group"><label>Testimonial</label><textarea class="form-textarea" id="m-tst-text" rows="4">'+s.text+'</textarea></div><div class="form-group"><label>Name</label><input class="form-input" id="m-tst-name" value="'+s.name+'"></div><div class="form-group"><label>Role</label><input class="form-input" id="m-tst-role" value="'+s.role+'"></div><div class="btn-group"><button class="btn btn-primary" id="m-save-tst">Save</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-tst').addEventListener('click',function(){var items=getData('testimonials',defaultTestimonials);items[parseInt(b.getAttribute('data-i'))]={text:document.getElementById('m-tst-text').value,name:document.getElementById('m-tst-name').value,role:document.getElementById('m-tst-role').value};setData('testimonials',items);closeModal();loadTestimonials();showToast('Testimonial updated!','success')})})});c.querySelectorAll('.tst-del').forEach(function(b){b.addEventListener('click',function(){var items=getData('testimonials',defaultTestimonials);items.splice(parseInt(b.getAttribute('data-i')),1);setData('testimonials',items);loadTestimonials()})})}
+    document.getElementById('add-testimonial').addEventListener('click',function(){openModal('<h3>Add Testimonial</h3><div class="form-group"><label>Testimonial</label><textarea class="form-textarea" id="m-tst-text" rows="4" placeholder="What they said..."></textarea></div><div class="form-group"><label>Name</label><input class="form-input" id="m-tst-name" placeholder="Client name"></div><div class="form-group"><label>Role</label><input class="form-input" id="m-tst-role" placeholder="Their role"></div><div class="btn-group"><button class="btn btn-primary" id="m-save-tst">Add</button><button class="btn btn-outline" onclick="document.getElementById(\'modal-overlay\').classList.remove(\'active\')">Cancel</button></div>');document.getElementById('m-save-tst').addEventListener('click',function(){var items=getData('testimonials',defaultTestimonials);items.push({text:document.getElementById('m-tst-text').value,name:document.getElementById('m-tst-name').value,role:document.getElementById('m-tst-role').value});setData('testimonials',items);closeModal();loadTestimonials();showToast('Testimonial added!','success')})});
+
+})();
+</script>
+</body>
+</html>
